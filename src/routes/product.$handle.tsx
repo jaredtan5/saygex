@@ -15,37 +15,29 @@ export const Route = createFileRoute("/product/$handle")({
     if (!product) throw notFound();
     return { product };
   },
-  head: ({ loaderData }) => ({
-    meta: [
-      { title: `${loaderData.product.title} | Store` },
-      {
-        name: "description",
-        content:
-          loaderData.product.description ||
-          `Buy ${loaderData.product.title} from our store`,
-      },
-      {
-        property: "og:title",
-        content: `${loaderData.product.title} | Store`,
-      },
-      {
-        property: "og:description",
-        content:
-          loaderData.product.description ||
-          `Buy ${loaderData.product.title} from our store`,
-      },
-      { property: "og:type", content: "product" },
-      { name: "twitter:card", content: "summary_large_image" },
-      {
-        name: "twitter:image",
-        content: loaderData.product.images.edges[0]?.node.url,
-      },
-      {
-        property: "og:image",
-        content: loaderData.product.images.edges[0]?.node.url,
-      },
-    ],
-  }),
+  head: ({ loaderData }) => {
+    const product = loaderData?.product;
+    const title = product?.title ?? "Product";
+    const description =
+      product?.description || `Buy ${title} from our store`;
+    const image = product?.images.edges[0]?.node.url;
+    return {
+      meta: [
+        { title: `${title} | Store` },
+        { name: "description", content: description },
+        { property: "og:title", content: `${title} | Store` },
+        { property: "og:description", content: description },
+        { property: "og:type", content: "product" },
+        { name: "twitter:card", content: "summary_large_image" },
+        ...(image
+          ? [
+              { name: "twitter:image", content: image },
+              { property: "og:image", content: image },
+            ]
+          : []),
+      ],
+    };
+  },
   component: ProductDetailPage,
   notFoundComponent: () => (
     <div className="flex min-h-screen items-center justify-center px-4">
