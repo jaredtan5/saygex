@@ -47,14 +47,6 @@ function Index() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <a href="/" className="text-xl font-bold tracking-tight">
-            Store
-          </a>
-        </div>
-      </header>
-
       <main className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         <section className="rounded-2xl bg-muted/50 px-6 py-16 text-center sm:px-12 lg:py-24">
           <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
