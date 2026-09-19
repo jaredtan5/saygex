@@ -76,11 +76,19 @@ function ConnectFourGame() {
 
   const playColumn = (column: number) => {
     if (winner || isDraw) return;
-    const openRow = board.findLastIndex((row) => row[column] === null);
+    let openRow = -1;
+    for (let row = ROWS - 1; row >= 0; row -= 1) {
+      if (board[row]?.[column] === null) {
+        openRow = row;
+        break;
+      }
+    }
     if (openRow < 0) return;
 
     const nextBoard = board.map((row) => [...row]);
-    nextBoard[openRow][column] = currentPlayer;
+    const targetRow = nextBoard[openRow];
+    if (!targetRow) return;
+    targetRow[column] = currentPlayer;
     const victory = findWinningCells(nextBoard, currentPlayer);
     setBoard(nextBoard);
 
@@ -187,7 +195,7 @@ function ConnectFourGame() {
                   key={column}
                   type="button"
                   onClick={() => playColumn(column)}
-                  disabled={Boolean(winner) || isDraw || board[0][column] !== null}
+                  disabled={Boolean(winner) || isDraw || board[0]?.[column] !== null}
                   className="group flex h-7 items-center justify-center rounded-sm text-mana-light transition-colors hover:bg-panel/50 disabled:cursor-not-allowed disabled:opacity-30 sm:h-9"
                   aria-label={`Drop mana stone in column ${column + 1}`}
                 >
