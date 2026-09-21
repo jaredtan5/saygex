@@ -398,7 +398,7 @@ function PlayerScore({
   label: string;
   score: number;
   active: boolean;
-  portrait?: string;
+  portrait?: string | undefined;
 }) {
   return (
     <div
