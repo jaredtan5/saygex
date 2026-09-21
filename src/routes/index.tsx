@@ -1,57 +1,93 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { RotateCcw, Sparkles, Swords } from "lucide-react";
-import { useMemo, useState } from "react";
+import { RotateCcw, Sparkles, Swords, Users } from "lucide-react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import academyLandscape from "@/assets/mana-academy.jpg";
+import academyLandscape from "@/assets/anime-mana-academy.jpg";
+import erisPortrait from "@/assets/bot-eris.jpg";
+import nanahoshiPortrait from "@/assets/bot-nanahoshi.jpg";
+import roxyPortrait from "@/assets/bot-roxy.jpg";
+import rudeusPortrait from "@/assets/bot-rudeus.jpg";
+import sylphiePortrait from "@/assets/bot-sylphie.jpg";
 import { Button } from "@/components/ui/button";
+import {
+  type Cell,
+  COLUMNS,
+  type Player,
+  type Position,
+  ROWS,
+  chooseBotColumn,
+  createBoard,
+  dropStone,
+  findWinningCells,
+  isBoardFull,
+} from "@/lib/connect-four";
 import { cn } from "@/lib/utils";
 
-type Player = 1 | 2;
-type Cell = Player | null;
-type Position = [number, number];
+type Opponent = {
+  id: string;
+  name: string;
+  difficulty: string;
+  level: number;
+  tagline: string;
+  portrait: string;
+};
 
-const ROWS = 6;
-const COLUMNS = 7;
-const DIRECTIONS: Position[] = [
-  [0, 1],
-  [1, 0],
-  [1, 1],
-  [1, -1],
+const OPPONENTS: Opponent[] = [
+  {
+    id: "sylphie",
+    name: "Sylphie",
+    difficulty: "Novice",
+    level: 1,
+    tagline: "Gentle wind magic, kind-hearted play",
+    portrait: sylphiePortrait,
+  },
+  {
+    id: "eris",
+    name: "Eris",
+    difficulty: "Apprentice",
+    level: 2,
+    tagline: "Reckless, aggressive and fearless",
+    portrait: erisPortrait,
+  },
+  {
+    id: "roxy",
+    name: "Roxy",
+    difficulty: "Adept",
+    level: 3,
+    tagline: "A teacher's patient, precise pressure",
+    portrait: roxyPortrait,
+  },
+  {
+    id: "nanahoshi",
+    name: "Nanahoshi",
+    difficulty: "Expert",
+    level: 4,
+    tagline: "Cold calculation, several steps ahead",
+    portrait: nanahoshiPortrait,
+  },
+  {
+    id: "rudeus",
+    name: "Rudeus",
+    difficulty: "Master",
+    level: 5,
+    tagline: "Relentless foresight — few escape him",
+    portrait: rudeusPortrait,
+  },
 ];
-
-const createBoard = (): Cell[][] =>
-  Array.from({ length: ROWS }, () => Array<Cell>(COLUMNS).fill(null));
-
-function findWinningCells(board: Cell[][], player: Player): Position[] {
-  for (let row = 0; row < ROWS; row += 1) {
-    for (let column = 0; column < COLUMNS; column += 1) {
-      for (const [rowStep, columnStep] of DIRECTIONS) {
-        const cells: Position[] = [];
-        for (let distance = 0; distance < 4; distance += 1) {
-          const nextRow = row + rowStep * distance;
-          const nextColumn = column + columnStep * distance;
-          if (board[nextRow]?.[nextColumn] !== player) break;
-          cells.push([nextRow, nextColumn]);
-        }
-        if (cells.length === 4) return cells;
-      }
-    }
-  }
-  return [];
-}
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Fourfold Mana — A Fantasy Connect Four Duel" },
+      { title: "Fourfold Mana — Connect Four Duels in the Academy" },
       {
         name: "description",
-        content: "Challenge a friend to a magical, local two-player Connect Four duel.",
+        content:
+          "Duel rival mages in Connect Four — take on five character opponents from novice to master, or play a friend on the same device.",
       },
-      { property: "og:title", content: "Fourfold Mana — Connect Four" },
+      { property: "og:title", content: "Fourfold Mana — Connect Four Duels" },
       {
         property: "og:description",
-        content: "Align four mana stones and claim victory in a fantasy academy duel.",
+        content: "Pick your rival mage and align four mana stones to win the duel.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -61,6 +97,8 @@ export const Route = createFileRoute("/")({
 });
 
 function ConnectFourGame() {
+  const [mode, setMode] = useState<"solo" | "duo">("solo");
+  const [opponent, setOpponent] = useState<Opponent>(OPPONENTS[0]!);
   const [board, setBoard] = useState<Cell[][]>(createBoard);
   const [currentPlayer, setCurrentPlayer] = useState<Player>(1);
   const [winner, setWinner] = useState<Player | null>(null);
@@ -68,79 +106,119 @@ function ConnectFourGame() {
   const [isDraw, setIsDraw] = useState(false);
   const [scores, setScores] = useState({ 1: 0, 2: 0 });
   const [round, setRound] = useState(1);
+  const [isThinking, setIsThinking] = useState(false);
+  const turnToken = useRef(0);
 
   const winningSet = useMemo(
     () => new Set(winningCells.map(([row, column]) => `${row}-${column}`)),
     [winningCells],
   );
 
-  const playColumn = (column: number) => {
-    if (winner || isDraw) return;
-    let openRow = -1;
-    for (let row = ROWS - 1; row >= 0; row -= 1) {
-      if (board[row]?.[column] === null) {
-        openRow = row;
-        break;
-      }
-    }
-    if (openRow < 0) return;
+  const isBotTurn = mode === "solo" && currentPlayer === 2 && !winner && !isDraw;
 
-    const nextBoard = board.map((row) => [...row]);
-    const targetRow = nextBoard[openRow];
-    if (!targetRow) return;
-    targetRow[column] = currentPlayer;
-    const victory = findWinningCells(nextBoard, currentPlayer);
-    setBoard(nextBoard);
+  const playColumn = useCallback(
+    (column: number, player: Player) => {
+      setBoard((current) => {
+        const nextBoard = dropStone(current, column, player);
+        if (!nextBoard) return current;
 
-    if (victory.length > 0) {
-      setWinner(currentPlayer);
-      setWinningCells(victory);
-      setScores((current) => ({
-        ...current,
-        [currentPlayer]: current[currentPlayer] + 1,
-      }));
+        const victory = findWinningCells(nextBoard, player);
+        if (victory.length > 0) {
+          turnToken.current += 1;
+          setWinner(player);
+          setWinningCells(victory);
+          setScores((score) => ({ ...score, [player]: score[player] + 1 }));
+        } else if (isBoardFull(nextBoard)) {
+          turnToken.current += 1;
+          setIsDraw(true);
+        } else {
+          setCurrentPlayer(player === 1 ? 2 : 1);
+        }
+        return nextBoard;
+      });
+    },
+    [],
+  );
+
+  const handleDrop = (column: number) => {
+    if (winner || isDraw || isThinking || isBotTurn) return;
+    playColumn(column, currentPlayer);
+  };
+
+  useEffect(() => {
+    if (!isBotTurn) {
+      setIsThinking(false);
       return;
     }
+    turnToken.current += 1;
+    const token = turnToken.current;
+    setIsThinking(true);
+    const timer = setTimeout(() => {
+      if (token !== turnToken.current) return;
+      const column = chooseBotColumn(board, 2, opponent.level);
+      setIsThinking(false);
+      if (column !== null) playColumn(column, 2);
+    }, 700);
+    return () => clearTimeout(timer);
+  }, [isBotTurn, board, opponent.level, playColumn]);
 
-    if (nextBoard.every((row) => row.every((cell) => cell !== null))) {
-      setIsDraw(true);
-      return;
-    }
-
-    setCurrentPlayer(currentPlayer === 1 ? 2 : 1);
+  const clearRound = (starter: Player) => {
+    turnToken.current += 1;
+    setBoard(createBoard());
+    setWinner(null);
+    setWinningCells([]);
+    setIsDraw(false);
+    setIsThinking(false);
+    setCurrentPlayer(starter);
   };
 
   const beginNextRound = () => {
     const nextRound = round + 1;
-    setBoard(createBoard());
     setRound(nextRound);
-    setWinner(null);
-    setWinningCells([]);
-    setIsDraw(false);
-    setCurrentPlayer(nextRound % 2 === 0 ? 2 : 1);
+    clearRound(nextRound % 2 === 0 ? 2 : 1);
   };
 
   const resetMatch = () => {
-    setBoard(createBoard());
-    setCurrentPlayer(1);
-    setWinner(null);
-    setWinningCells([]);
-    setIsDraw(false);
     setScores({ 1: 0, 2: 0 });
     setRound(1);
+    clearRound(1);
   };
 
+  const switchMode = (nextMode: "solo" | "duo") => {
+    if (nextMode === mode) return;
+    setMode(nextMode);
+    setScores({ 1: 0, 2: 0 });
+    setRound(1);
+    clearRound(1);
+  };
+
+  const selectOpponent = (next: Opponent) => {
+    if (next.id === opponent.id && mode === "solo") return;
+    setOpponent(next);
+    setMode("solo");
+    setScores({ 1: 0, 2: 0 });
+    setRound(1);
+    clearRound(1);
+  };
+
+  const rivalName = mode === "solo" ? opponent.name : "Mage 2";
   const status = winner
-    ? `Mage ${winner} claims the round!`
+    ? `${winner === 1 ? "You claim" : `${rivalName} claims`} the round!`
     : isDraw
       ? "The mana field is sealed — a draw!"
-      : `Mage ${currentPlayer}, channel your mana`;
+      : isThinking
+        ? `${opponent.name} is reading the field…`
+        : mode === "solo"
+          ? currentPlayer === 1
+            ? "Your move — channel your mana"
+            : `${opponent.name} is casting`
+          : `Mage ${currentPlayer}, channel your mana`;
 
   return (
     <main className="relative min-h-svh overflow-hidden bg-background text-foreground">
       <img
         src={academyLandscape}
-        alt="A sunlit magical academy overlooking mountains and waterfalls"
+        alt="An anime-style magical academy terrace overlooking waterfalls and towers"
         width={1920}
         height={1080}
         className="absolute inset-0 h-full w-full object-cover"
@@ -168,15 +246,81 @@ function ConnectFourGame() {
           </Button>
         </header>
 
+        <div className="mt-4 flex flex-col gap-3">
+          <div className="flex justify-center gap-2">
+            <Button
+              size="sm"
+              variant={mode === "solo" ? "default" : "ghost"}
+              onClick={() => switchMode("solo")}
+              className="font-display text-xs uppercase tracking-[0.18em] text-primary-foreground data-[active=true]:text-primary-foreground"
+            >
+              <Swords /> Solo duel
+            </Button>
+            <Button
+              size="sm"
+              variant={mode === "duo" ? "default" : "ghost"}
+              onClick={() => switchMode("duo")}
+              className="font-display text-xs uppercase tracking-[0.18em] text-primary-foreground"
+            >
+              <Users /> Two players
+            </Button>
+          </div>
+
+          {mode === "solo" && (
+            <div className="flex flex-wrap justify-center gap-2">
+              {OPPONENTS.map((candidate) => (
+                <button
+                  key={candidate.id}
+                  type="button"
+                  onClick={() => selectOpponent(candidate)}
+                  aria-pressed={candidate.id === opponent.id}
+                  className={cn("rival-chip", candidate.id === opponent.id && "rival-chip-active")}
+                >
+                  <img
+                    src={candidate.portrait}
+                    alt=""
+                    width={96}
+                    height={112}
+                    className="h-9 w-9 rounded-full object-cover"
+                  />
+                  <span className="text-left leading-tight">
+                    <span className="block font-display text-xs font-semibold text-primary-foreground">
+                      {candidate.name}
+                    </span>
+                    <span className="block text-[10px] uppercase tracking-[0.16em] text-mana-light">
+                      {candidate.difficulty}
+                    </span>
+                  </span>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
         <section className="mx-auto flex w-full max-w-4xl flex-1 flex-col justify-center py-3 sm:py-5">
           <div className="mb-3 grid grid-cols-[1fr_auto_1fr] items-center gap-2 sm:gap-4">
-            <PlayerScore player={1} score={scores[1]} active={!winner && !isDraw && currentPlayer === 1} />
+            <PlayerScore
+              player={1}
+              label={mode === "solo" ? "You" : "Mage 1"}
+              score={scores[1]}
+              active={!winner && !isDraw && currentPlayer === 1}
+            />
             <div className="text-center text-primary-foreground">
               <Swords className="mx-auto mb-1 h-5 w-5 text-gold" />
               <span className="font-display text-xs uppercase tracking-[0.2em]">Round {round}</span>
             </div>
-            <PlayerScore player={2} score={scores[2]} active={!winner && !isDraw && currentPlayer === 2} />
+            <PlayerScore
+              player={2}
+              label={mode === "solo" ? `${opponent.name} · ${opponent.difficulty}` : "Mage 2"}
+              score={scores[2]}
+              active={!winner && !isDraw && currentPlayer === 2}
+              portrait={mode === "solo" ? opponent.portrait : undefined}
+            />
           </div>
+
+          {mode === "solo" && (
+            <p className="mb-2 text-center text-xs text-primary-foreground/75">{opponent.tagline}</p>
+          )}
 
           <div className="mb-3 flex min-h-12 items-center justify-center text-center">
             <div className={cn("status-ribbon", (winner || isDraw) && "status-ribbon-victory")}>
@@ -194,8 +338,10 @@ function ConnectFourGame() {
                 <button
                   key={column}
                   type="button"
-                  onClick={() => playColumn(column)}
-                  disabled={Boolean(winner) || isDraw || board[0]?.[column] !== null}
+                  onClick={() => handleDrop(column)}
+                  disabled={
+                    Boolean(winner) || isDraw || isBotTurn || board[0]?.[column] !== null
+                  }
                   className="group flex h-7 items-center justify-center rounded-sm text-mana-light transition-colors hover:bg-panel/50 disabled:cursor-not-allowed disabled:opacity-30 sm:h-9"
                   aria-label={`Drop mana stone in column ${column + 1}`}
                 >
@@ -234,14 +380,26 @@ function ConnectFourGame() {
         </section>
 
         <footer className="text-center text-xs text-primary-foreground/75">
-          First mage to align four mana stones wins the duel
+          {ROWS * COLUMNS} slots, one goal — align four mana stones to win the duel
         </footer>
       </div>
     </main>
   );
 }
 
-function PlayerScore({ player, score, active }: { player: Player; score: number; active: boolean }) {
+function PlayerScore({
+  player,
+  label,
+  score,
+  active,
+  portrait,
+}: {
+  player: Player;
+  label: string;
+  score: number;
+  active: boolean;
+  portrait?: string | undefined;
+}) {
   return (
     <div
       className={cn(
@@ -250,12 +408,24 @@ function PlayerScore({ player, score, active }: { player: Player; score: number;
         player === 2 && "flex-row-reverse text-right",
       )}
     >
-      <span className={cn("score-gem", player === 1 ? "score-gem-one" : "score-gem-two")} />
-      <div>
-        <p className="text-[10px] uppercase tracking-[0.18em] text-primary-foreground/70 sm:text-xs">
-          Mage {player}
+      {portrait ? (
+        <img
+          src={portrait}
+          alt=""
+          width={96}
+          height={112}
+          className="h-9 w-9 flex-none rounded-full border-2 border-panel-border object-cover sm:h-11 sm:w-11"
+        />
+      ) : (
+        <span className={cn("score-gem", player === 1 ? "score-gem-one" : "score-gem-two")} />
+      )}
+      <div className="min-w-0">
+        <p className="truncate text-[10px] uppercase tracking-[0.18em] text-primary-foreground/70 sm:text-xs">
+          {label}
         </p>
-        <p className="font-display text-lg font-bold leading-none text-primary-foreground sm:text-2xl">{score}</p>
+        <p className="font-display text-lg font-bold leading-none text-primary-foreground sm:text-2xl">
+          {score}
+        </p>
       </div>
     </div>
   );
