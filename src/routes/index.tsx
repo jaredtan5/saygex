@@ -46,6 +46,7 @@ const OPPONENTS: Opponent[] = [
     level: 1,
     tagline: "Gentle wind magic, kind-hearted play",
     portrait: sylphiePortrait,
+    fullBody: sylphieFull,
   },
   {
     id: "eris",
@@ -54,6 +55,7 @@ const OPPONENTS: Opponent[] = [
     level: 2,
     tagline: "Reckless, aggressive and fearless",
     portrait: erisPortrait,
+    fullBody: erisFull,
   },
   {
     id: "roxy",
@@ -62,6 +64,7 @@ const OPPONENTS: Opponent[] = [
     level: 3,
     tagline: "A teacher's patient, precise pressure",
     portrait: roxyPortrait,
+    fullBody: roxyFull,
   },
   {
     id: "nanahoshi",
@@ -70,6 +73,7 @@ const OPPONENTS: Opponent[] = [
     level: 4,
     tagline: "Cold calculation, several steps ahead",
     portrait: nanahoshiPortrait,
+    fullBody: nanahoshiFull,
   },
   {
     id: "rudeus",
@@ -78,6 +82,7 @@ const OPPONENTS: Opponent[] = [
     level: 5,
     tagline: "Relentless foresight — few escape him",
     portrait: rudeusPortrait,
+    fullBody: rudeusFull,
   },
 ];
 
