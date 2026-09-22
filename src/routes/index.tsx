@@ -3,16 +3,11 @@ import { RotateCcw, Sparkles, Swords, Users } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import academyLandscape from "@/assets/anime-mana-academy.jpg";
-import erisFull from "@/assets/bot-eris-full.png";
-import erisPortrait from "@/assets/bot-eris.jpg";
-import nanahoshiFull from "@/assets/bot-nanahoshi-full.png";
-import nanahoshiPortrait from "@/assets/bot-nanahoshi.jpg";
-import roxyFull from "@/assets/bot-roxy-full.png";
-import roxyPortrait from "@/assets/bot-roxy.jpg";
-import rudeusFull from "@/assets/bot-rudeus-full.png";
-import rudeusPortrait from "@/assets/bot-rudeus.jpg";
-import sylphieFull from "@/assets/bot-sylphie-full.png";
-import sylphiePortrait from "@/assets/bot-sylphie.jpg";
+import erisAsset from "@/assets/eris-upload.webp.asset.json";
+import nanahoshiAsset from "@/assets/nanahoshi-upload.webp.asset.json";
+import roxyAsset from "@/assets/roxy-upload.webp.asset.json";
+import rudeusAsset from "@/assets/rudeus-upload.webp.asset.json";
+import sylphieAsset from "@/assets/sylphie-upload.webp.asset.json";
 import { Button } from "@/components/ui/button";
 import {
   type Cell,
@@ -45,8 +40,8 @@ const OPPONENTS: Opponent[] = [
     difficulty: "Novice",
     level: 1,
     tagline: "Gentle wind magic, kind-hearted play",
-    portrait: sylphiePortrait,
-    fullBody: sylphieFull,
+    portrait: sylphieAsset.url,
+    fullBody: sylphieAsset.url,
   },
   {
     id: "eris",
@@ -54,8 +49,8 @@ const OPPONENTS: Opponent[] = [
     difficulty: "Apprentice",
     level: 2,
     tagline: "Reckless, aggressive and fearless",
-    portrait: erisPortrait,
-    fullBody: erisFull,
+    portrait: erisAsset.url,
+    fullBody: erisAsset.url,
   },
   {
     id: "roxy",
@@ -63,8 +58,8 @@ const OPPONENTS: Opponent[] = [
     difficulty: "Adept",
     level: 3,
     tagline: "A teacher's patient, precise pressure",
-    portrait: roxyPortrait,
-    fullBody: roxyFull,
+    portrait: roxyAsset.url,
+    fullBody: roxyAsset.url,
   },
   {
     id: "nanahoshi",
@@ -72,8 +67,8 @@ const OPPONENTS: Opponent[] = [
     difficulty: "Expert",
     level: 4,
     tagline: "Cold calculation, several steps ahead",
-    portrait: nanahoshiPortrait,
-    fullBody: nanahoshiFull,
+    portrait: nanahoshiAsset.url,
+    fullBody: nanahoshiAsset.url,
   },
   {
     id: "rudeus",
@@ -81,8 +76,8 @@ const OPPONENTS: Opponent[] = [
     difficulty: "Master",
     level: 5,
     tagline: "Relentless foresight — few escape him",
-    portrait: rudeusPortrait,
-    fullBody: rudeusFull,
+    portrait: rudeusAsset.url,
+    fullBody: rudeusAsset.url,
   },
 ];
 
