@@ -3,10 +3,15 @@ import { RotateCcw, Sparkles, Swords, Users } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import academyLandscape from "@/assets/anime-mana-academy.jpg";
+import erisFull from "@/assets/bot-eris-full.png";
 import erisPortrait from "@/assets/bot-eris.jpg";
+import nanahoshiFull from "@/assets/bot-nanahoshi-full.png";
 import nanahoshiPortrait from "@/assets/bot-nanahoshi.jpg";
+import roxyFull from "@/assets/bot-roxy-full.png";
 import roxyPortrait from "@/assets/bot-roxy.jpg";
+import rudeusFull from "@/assets/bot-rudeus-full.png";
 import rudeusPortrait from "@/assets/bot-rudeus.jpg";
+import sylphieFull from "@/assets/bot-sylphie-full.png";
 import sylphiePortrait from "@/assets/bot-sylphie.jpg";
 import { Button } from "@/components/ui/button";
 import {
@@ -30,6 +35,7 @@ type Opponent = {
   level: number;
   tagline: string;
   portrait: string;
+  fullBody: string;
 };
 
 const OPPONENTS: Opponent[] = [
@@ -40,6 +46,7 @@ const OPPONENTS: Opponent[] = [
     level: 1,
     tagline: "Gentle wind magic, kind-hearted play",
     portrait: sylphiePortrait,
+    fullBody: sylphieFull,
   },
   {
     id: "eris",
@@ -48,6 +55,7 @@ const OPPONENTS: Opponent[] = [
     level: 2,
     tagline: "Reckless, aggressive and fearless",
     portrait: erisPortrait,
+    fullBody: erisFull,
   },
   {
     id: "roxy",
@@ -56,6 +64,7 @@ const OPPONENTS: Opponent[] = [
     level: 3,
     tagline: "A teacher's patient, precise pressure",
     portrait: roxyPortrait,
+    fullBody: roxyFull,
   },
   {
     id: "nanahoshi",
@@ -64,6 +73,7 @@ const OPPONENTS: Opponent[] = [
     level: 4,
     tagline: "Cold calculation, several steps ahead",
     portrait: nanahoshiPortrait,
+    fullBody: nanahoshiFull,
   },
   {
     id: "rudeus",
@@ -72,6 +82,7 @@ const OPPONENTS: Opponent[] = [
     level: 5,
     tagline: "Relentless foresight — few escape him",
     portrait: rudeusPortrait,
+    fullBody: rudeusFull,
   },
 ];
 
@@ -332,7 +343,26 @@ function ConnectFourGame() {
             </div>
           </div>
 
-          <div className="mx-auto w-full max-w-[640px]">
+          <div className="mx-auto flex w-full max-w-4xl items-end justify-center gap-4 sm:gap-8">
+            {mode === "solo" && (
+              <figure className="relative hidden w-40 flex-none self-end md:order-2 md:block lg:w-52">
+                <img
+                  src={opponent.fullBody}
+                  alt={`${opponent.name}, your ${opponent.difficulty} rival mage`}
+                  width={640}
+                  height={1024}
+                  loading="lazy"
+                  className={cn(
+                    "rival-figure w-full transition-opacity duration-500",
+                    isThinking && "rival-figure-thinking",
+                  )}
+                />
+                <figcaption className="pointer-events-none absolute -bottom-1 left-1/2 w-max -translate-x-1/2 rounded-full border border-panel-border bg-panel/80 px-3 py-1 font-display text-[10px] uppercase tracking-[0.2em] text-mana-light">
+                  {opponent.name} · {opponent.difficulty}
+                </figcaption>
+              </figure>
+            )}
+            <div className="w-full max-w-[640px]">
             <div className="mb-1 grid grid-cols-7 gap-1 px-3 sm:px-4">
               {Array.from({ length: COLUMNS }, (_, column) => (
                 <button
@@ -367,6 +397,7 @@ function ConnectFourGame() {
                   </div>
                 )),
               )}
+            </div>
             </div>
           </div>
 
