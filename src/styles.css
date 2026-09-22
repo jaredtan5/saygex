@@ -312,3 +312,28 @@
 @media (prefers-reduced-motion: reduce) {
   .mana-dust, .mana-stone, .mana-stone-winning { animation: none; }
 }
+
+.rival-figure {
+  filter: drop-shadow(0 12px 24px rgb(0 0 0 / 45%));
+  animation: rival-idle 5s ease-in-out infinite;
+}
+
+.rival-figure-thinking {
+  filter: drop-shadow(0 0 22px var(--mana-light)) drop-shadow(0 12px 24px rgb(0 0 0 / 45%));
+}
+
+@keyframes rival-idle {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rival-figure {
+    animation: none;
+  }
+}
