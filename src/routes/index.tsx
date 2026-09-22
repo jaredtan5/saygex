@@ -343,7 +343,26 @@ function ConnectFourGame() {
             </div>
           </div>
 
-          <div className="mx-auto w-full max-w-[640px]">
+          <div className="mx-auto flex w-full max-w-4xl items-end justify-center gap-4 sm:gap-8">
+            {mode === "solo" && (
+              <figure className="relative hidden w-40 flex-none self-end md:block lg:w-52">
+                <img
+                  src={opponent.fullBody}
+                  alt={`${opponent.name}, your ${opponent.difficulty} rival mage`}
+                  width={640}
+                  height={1024}
+                  loading="lazy"
+                  className={cn(
+                    "rival-figure w-full transition-opacity duration-500",
+                    isThinking && "rival-figure-thinking",
+                  )}
+                />
+                <figcaption className="pointer-events-none absolute -bottom-1 left-1/2 w-max -translate-x-1/2 rounded-full border border-panel-border bg-panel/80 px-3 py-1 font-display text-[10px] uppercase tracking-[0.2em] text-mana-light">
+                  {opponent.name} · {opponent.difficulty}
+                </figcaption>
+              </figure>
+            )}
+            <div className="w-full max-w-[640px]">
             <div className="mb-1 grid grid-cols-7 gap-1 px-3 sm:px-4">
               {Array.from({ length: COLUMNS }, (_, column) => (
                 <button
