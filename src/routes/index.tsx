@@ -398,6 +398,7 @@ function ConnectFourGame() {
                 )),
               )}
             </div>
+            </div>
           </div>
 
           <div className="mt-4 flex min-h-10 justify-center">
