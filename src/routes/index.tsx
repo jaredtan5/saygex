@@ -3,10 +3,15 @@ import { RotateCcw, Sparkles, Swords, Users } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import academyLandscape from "@/assets/anime-mana-academy.jpg";
+import erisFull from "@/assets/bot-eris-full.png";
 import erisPortrait from "@/assets/bot-eris.jpg";
+import nanahoshiFull from "@/assets/bot-nanahoshi-full.png";
 import nanahoshiPortrait from "@/assets/bot-nanahoshi.jpg";
+import roxyFull from "@/assets/bot-roxy-full.png";
 import roxyPortrait from "@/assets/bot-roxy.jpg";
+import rudeusFull from "@/assets/bot-rudeus-full.png";
 import rudeusPortrait from "@/assets/bot-rudeus.jpg";
+import sylphieFull from "@/assets/bot-sylphie-full.png";
 import sylphiePortrait from "@/assets/bot-sylphie.jpg";
 import { Button } from "@/components/ui/button";
 import {
@@ -30,6 +35,7 @@ type Opponent = {
   level: number;
   tagline: string;
   portrait: string;
+  fullBody: string;
 };
 
 const OPPONENTS: Opponent[] = [
