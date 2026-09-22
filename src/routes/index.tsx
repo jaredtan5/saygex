@@ -3,6 +3,11 @@ import { RotateCcw, Sparkles, Swords, Users } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import academyLandscape from "@/assets/anime-mana-academy.jpg";
+import erisPortrait from "@/assets/bot-eris.jpg";
+import nanahoshiPortrait from "@/assets/bot-nanahoshi.jpg";
+import roxyPortrait from "@/assets/bot-roxy.jpg";
+import rudeusPortrait from "@/assets/bot-rudeus.jpg";
+import sylphiePortrait from "@/assets/bot-sylphie.jpg";
 import erisAsset from "@/assets/eris-upload.webp.asset.json";
 import nanahoshiAsset from "@/assets/nanahoshi-upload.webp.asset.json";
 import roxyAsset from "@/assets/roxy-upload.webp.asset.json";
@@ -40,7 +45,7 @@ const OPPONENTS: Opponent[] = [
     difficulty: "Novice",
     level: 1,
     tagline: "Gentle wind magic, kind-hearted play",
-    portrait: sylphieAsset.url,
+    portrait: sylphiePortrait,
     fullBody: sylphieAsset.url,
   },
   {
@@ -49,7 +54,7 @@ const OPPONENTS: Opponent[] = [
     difficulty: "Apprentice",
     level: 2,
     tagline: "Reckless, aggressive and fearless",
-    portrait: erisAsset.url,
+    portrait: erisPortrait,
     fullBody: erisAsset.url,
   },
   {
@@ -58,7 +63,7 @@ const OPPONENTS: Opponent[] = [
     difficulty: "Adept",
     level: 3,
     tagline: "A teacher's patient, precise pressure",
-    portrait: roxyAsset.url,
+    portrait: roxyPortrait,
     fullBody: roxyAsset.url,
   },
   {
@@ -67,7 +72,7 @@ const OPPONENTS: Opponent[] = [
     difficulty: "Expert",
     level: 4,
     tagline: "Cold calculation, several steps ahead",
-    portrait: nanahoshiAsset.url,
+    portrait: nanahoshiPortrait,
     fullBody: nanahoshiAsset.url,
   },
   {
@@ -76,7 +81,7 @@ const OPPONENTS: Opponent[] = [
     difficulty: "Master",
     level: 5,
     tagline: "Relentless foresight — few escape him",
-    portrait: rudeusAsset.url,
+    portrait: rudeusPortrait,
     fullBody: rudeusAsset.url,
   },
 ];
