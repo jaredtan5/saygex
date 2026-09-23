@@ -308,7 +308,7 @@ function ConnectFourGame() {
           )}
         </div>
 
-        <section className="mx-auto flex w-full max-w-4xl flex-1 flex-col justify-center py-3 sm:py-5">
+        <section className="mx-auto flex w-full max-w-4xl flex-col justify-center py-3 sm:py-5">
           <div className="mb-3 grid grid-cols-[1fr_auto_1fr] items-center gap-2 sm:gap-4">
             <PlayerScore
               player={1}
