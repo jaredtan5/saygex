@@ -45,7 +45,7 @@ const OPPONENTS: Opponent[] = [
     difficulty: "Novice",
     level: 1,
     tagline: "Gentle wind magic, kind-hearted play",
-    portrait: sylphiePortrait,
+    portrait: sylphiePortraitAsset.url,
     fullBody: sylphieAsset.url,
   },
   {
