@@ -345,7 +345,7 @@ function ConnectFourGame() {
 
           <div className="mx-auto flex w-full max-w-5xl items-stretch justify-center gap-4 sm:gap-8">
             {mode === "solo" && (
-              <figure className="relative hidden h-full flex-none flex-col md:order-2 md:flex lg:w-56 xl:w-64">
+              <figure className="relative hidden h-full flex-none flex-col md:order-2 md:flex">
                 <img
                   src={opponent.fullBody}
                   alt={`${opponent.name}, your ${opponent.difficulty} rival mage`}
@@ -353,7 +353,7 @@ function ConnectFourGame() {
                   height={1024}
                   loading="lazy"
                   className={cn(
-                    "rival-figure min-h-0 w-full flex-1 object-contain transition-opacity duration-500",
+                    "rival-figure h-full w-auto flex-1 object-contain transition-opacity duration-500",
                     isThinking && "rival-figure-thinking",
                   )}
                 />
