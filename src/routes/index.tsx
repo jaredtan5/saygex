@@ -395,7 +395,7 @@ function ConnectFourGame() {
               ))}
             </div>
 
-            <div className="game-board" role="grid" aria-label="Connect Four board">
+            <div ref={boardRef} className="game-board" role="grid" aria-label="Connect Four board">
               {board.map((row, rowIndex) =>
                 row.map((cell, columnIndex) => (
                   <div className="board-slot" role="gridcell" key={`${rowIndex}-${columnIndex}`}>
