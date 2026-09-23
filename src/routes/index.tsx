@@ -357,7 +357,10 @@ function ConnectFourGame() {
 
           <div className="mx-auto flex w-full max-w-5xl items-stretch justify-center gap-4 sm:gap-8">
             {mode === "solo" && (
-              <figure className="relative hidden h-full flex-none flex-col md:order-2 md:flex">
+              <figure
+                className="relative hidden flex-none flex-col md:order-2 md:flex"
+                style={{ height: boardHeight || "auto" }}
+              >
                 <img
                   src={opponent.fullBody}
                   alt={`${opponent.name}, your ${opponent.difficulty} rival mage`}
