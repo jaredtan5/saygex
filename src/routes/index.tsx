@@ -118,7 +118,19 @@ function ConnectFourGame() {
   const [scores, setScores] = useState({ 1: 0, 2: 0 });
   const [round, setRound] = useState(1);
   const [isThinking, setIsThinking] = useState(false);
+  const [boardHeight, setBoardHeight] = useState(0);
+  const boardRef = useRef<HTMLDivElement>(null);
   const turnToken = useRef(0);
+
+  useEffect(() => {
+    const el = boardRef.current;
+    if (!el) return;
+    const update = () => setBoardHeight(el.getBoundingClientRect().height);
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
   const winningSet = useMemo(
     () => new Set(winningCells.map(([row, column]) => `${row}-${column}`)),
