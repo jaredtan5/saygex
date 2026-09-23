@@ -118,7 +118,19 @@ function ConnectFourGame() {
   const [scores, setScores] = useState({ 1: 0, 2: 0 });
   const [round, setRound] = useState(1);
   const [isThinking, setIsThinking] = useState(false);
+  const [boardHeight, setBoardHeight] = useState(0);
+  const boardRef = useRef<HTMLDivElement>(null);
   const turnToken = useRef(0);
+
+  useEffect(() => {
+    const el = boardRef.current;
+    if (!el) return;
+    const update = () => setBoardHeight(el.getBoundingClientRect().height);
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
   const winningSet = useMemo(
     () => new Set(winningCells.map(([row, column]) => `${row}-${column}`)),
@@ -308,7 +320,7 @@ function ConnectFourGame() {
           )}
         </div>
 
-        <section className="mx-auto flex w-full max-w-4xl flex-1 flex-col justify-center py-3 sm:py-5">
+        <section className="mx-auto flex w-full max-w-4xl flex-col justify-center py-3 sm:py-5">
           <div className="mb-3 grid grid-cols-[1fr_auto_1fr] items-center gap-2 sm:gap-4">
             <PlayerScore
               player={1}
@@ -343,9 +355,12 @@ function ConnectFourGame() {
             </div>
           </div>
 
-          <div className="mx-auto flex w-full max-w-4xl items-end justify-center gap-4 sm:gap-8">
+          <div className="mx-auto flex w-full max-w-5xl items-stretch justify-center gap-4 sm:gap-8">
             {mode === "solo" && (
-              <figure className="relative hidden w-40 flex-none self-end md:order-2 md:block lg:w-52">
+              <figure
+                className="relative hidden flex-none flex-col md:order-2 md:flex"
+                style={{ height: boardHeight || "auto" }}
+              >
                 <img
                   src={opponent.fullBody}
                   alt={`${opponent.name}, your ${opponent.difficulty} rival mage`}
@@ -353,16 +368,16 @@ function ConnectFourGame() {
                   height={1024}
                   loading="lazy"
                   className={cn(
-                    "rival-figure w-full transition-opacity duration-500",
+                    "rival-figure h-full w-auto flex-1 object-contain transition-opacity duration-500",
                     isThinking && "rival-figure-thinking",
                   )}
                 />
-                <figcaption className="pointer-events-none absolute -bottom-1 left-1/2 w-max -translate-x-1/2 rounded-full border border-panel-border bg-panel/80 px-3 py-1 font-display text-[10px] uppercase tracking-[0.2em] text-mana-light">
+                <figcaption className="pointer-events-none w-max self-center rounded-full border border-panel-border bg-panel/80 px-3 py-1 font-display text-[10px] uppercase tracking-[0.2em] text-mana-light">
                   {opponent.name} · {opponent.difficulty}
                 </figcaption>
               </figure>
             )}
-            <div className="w-full max-w-[640px]">
+            <div className="flex w-full max-w-[640px] flex-col">
             <div className="mb-1 grid grid-cols-7 gap-1 px-3 sm:px-4">
               {Array.from({ length: COLUMNS }, (_, column) => (
                 <button
@@ -380,7 +395,7 @@ function ConnectFourGame() {
               ))}
             </div>
 
-            <div className="game-board" role="grid" aria-label="Connect Four board">
+            <div ref={boardRef} className="game-board" role="grid" aria-label="Connect Four board">
               {board.map((row, rowIndex) =>
                 row.map((cell, columnIndex) => (
                   <div className="board-slot" role="gridcell" key={`${rowIndex}-${columnIndex}`}>
