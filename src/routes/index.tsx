@@ -353,7 +353,7 @@ function ConnectFourGame() {
                   height={1024}
                   loading="lazy"
                   className={cn(
-                    "rival-figure h-full w-auto flex-1 object-contain transition-opacity duration-500",
+                    "rival-figure min-h-0 w-full flex-1 object-contain transition-opacity duration-500",
                     isThinking && "rival-figure-thinking",
                   )}
                 />
