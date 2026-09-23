@@ -7,7 +7,7 @@ import erisPortrait from "@/assets/bot-eris.jpg";
 import nanahoshiPortrait from "@/assets/bot-nanahoshi.jpg";
 import roxyPortrait from "@/assets/bot-roxy.jpg";
 import rudeusPortrait from "@/assets/bot-rudeus.jpg";
-import sylphiePortrait from "@/assets/bot-sylphie.jpg";
+import sylphiePortraitAsset from "@/assets/sylphie-portrait.webp.asset.json";
 import erisAsset from "@/assets/eris-upload.webp.asset.json";
 import nanahoshiAsset from "@/assets/nanahoshi-upload.webp.asset.json";
 import roxyAsset from "@/assets/roxy-upload.webp.asset.json";
